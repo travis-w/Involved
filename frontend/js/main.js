@@ -18,6 +18,7 @@ var LocationList = {
     }
   }
 }
+
 var LocationProfile = {
   template: "#template-locationprofile",
   data: function() {
@@ -33,8 +34,49 @@ var LocationProfile = {
   }
 }
 
-var Login = { template: "#template-login" }
-var Register = { template: "#template-register"}
+var Login = {
+  template: "#template-login",
+  data: function() {
+    return {
+      formData: {
+        email: "",
+        password: ""
+      }
+    }
+  },
+
+  methods: {
+    login: function() {
+      // Login Logic
+      console.log(JSON.stringify(this.formData))
+    }
+  }
+
+}
+
+var Register = {
+  template: "#template-register",
+  data: function() {
+    return {
+      formData: {
+        email: "",
+        password: "",
+        confirmPassword: ""
+      }
+    }
+  },
+
+  methods: {
+    register: function() {
+      // Register Logic
+      console.log(JSON.stringify(this.formData));
+
+      if (this.formData.password !== this.formData.confirmPassword) {
+        app.addMessage("danger", "Error", "Passwords do not match.");
+      }
+    }
+  }
+}
 
 /* ------------------- ROUTES ------------------- */
 var routes = [
@@ -52,5 +94,14 @@ var router = new VueRouter({
 
 // Mount to app
 var app = new Vue({
-  router
+  router,
+  data: {
+    messages: [],
+    test: "test"
+  },
+  methods: {
+    addMessage: function(type, title, message) {
+      this.messages.push({ "type": type, "title": title, "message": message });
+    }
+  }
 }).$mount("#app")

@@ -21,6 +21,12 @@
         <h3 class="text-muted">Involved</h3>
       </div>
 
+      <!-- Alerts -->
+      <div v-for="msg in messages" v-bind:class="['alert', 'alert-' + msg.type, 'alert-dismissible']" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <strong>{{ msg.title }}:</strong> {{ msg.message }}
+      </div>
+
       <router-view></router-view>
 
     </div> <!-- /container -->
@@ -64,13 +70,13 @@
             <form>
               <div class="form-group">
                 <label for="exampleInputEmail1">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+                <input type="email" class="form-control" placeholder="Email" v-model="formData.email">
               </div>
               <div class="form-group">
                 <label for="exampleInputPassword1">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+                <input type="password" class="form-control"placeholder="Password" v-model="formData.password">
               </div>
-              <button type="submit" class="btn btn-default pull-right">Login</button>
+              <button type="button" class="btn btn-default pull-right" v-on:click="login">Login</button>
             </form>
           </div>
         </div>
@@ -85,12 +91,32 @@
 
     <!-- Register -->
     <script type="text/x-template" id="template-register">
-      <p>Register</p>
+      <div class="row">
+        <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+          <form>
+            <div class="form-group">
+              <label for="exampleInputEmail1">Email address</label>
+              <input type="email" class="form-control" placeholder="Email" v-model="formData.email">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Password</label>
+              <input type="password" class="form-control" placeholder="Password" v-model="formData.password">
+            </div>
+            <div class="form-group">
+              <label for="exampleInputPassword1">Confirm Password</label>
+              <input type="password" class="form-control" placeholder="Confirm Password" v-model="formData.confirmPassword">
+            </div>
+            <button type="button" class="btn btn-default pull-right" v-on:click="register">Register</button>
+          </form>
+        </div>
+      </div>
     </script>
     <!-- /Register -->
 
     <script src="./js/vue.js"></script>
     <script src="./js/vue-router.js"></script>
+    <script src="./js/jquery.js"></script>
+    <script src="./js/bootstrap.js"></script>
     <script src="./js/main.js"></script>
   </body>
 </html>
