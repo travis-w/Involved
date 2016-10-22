@@ -2,6 +2,8 @@
 <html>
   <head>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Involved</title>
     <link rel="stylesheet" href="./css/bootstrap.css">
     <link rel="stylesheet" href="./css/style.css">
@@ -11,12 +13,12 @@
       <div class="header clearfix">
         <nav>
           <ul class="nav nav-pills pull-right">
-            <router-link tag="li" to="/home" active-class="active"><a>Home</a></router-link>
-            <router-link tag="li" to="/locations" active-class="active"><a>Locations</a></router-link>
-            <router-link tag="li" to="/login" active-class="active"><a>Login</a></router-link>
+            <router-link tag="li" v-bind:to="{ name: 'home' }" active-class="active"><a>Home</a></router-link>
+            <router-link tag="li" v-bind:to="{ name: 'locationList' }" active-class="active"><a>Locations</a></router-link>
+            <router-link tag="li" v-bind:to="{ name: 'login' }" active-class="active"><a>Login</a></router-link>
           </ul>
         </nav>
-        <h3 class="text-muted">Project name</h3>
+        <h3 class="text-muted">Involved</h3>
       </div>
 
       <router-view></router-view>
@@ -25,9 +27,67 @@
 
 
     <!-- TEMPALTES -->
+
+    <!-- Home -->
     <script type="text/x-template" id="template-home">
-      <p>Hello hello hello</p>
+      <p>Home Page</p>
     </script>
+    <!-- /Home -->
+
+    <!-- LocationList -->
+    <script type="text/x-template" id="template-locationlist">
+      <ul class="location-list">
+        <li v-for="location in locations">
+          <div class="location-image pull-left">
+            <img src="./img/house.png" width="100px" height="100px" />
+          </div>
+          <div class="location-data">
+            <router-link v-bind:to="{ name: 'locationProfile', params: { id: location.id } }">{{ location.name }}</router-link>
+            <div>{{ location.address }}</div>
+          </div>
+        </li>
+      </ul>
+    </script>
+    <!-- /Locationlist -->
+
+    <!-- Location -->
+    <script type="text/x-template" id="template-locationprofile">
+      <p>{{ location.name }}</p>
+    </script>
+    <!-- /Location -->
+
+    <!-- Login -->
+    <script type="text/x-template" id="template-login">
+      <div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-sm-offset-3">
+            <form>
+              <div class="form-group">
+                <label for="exampleInputEmail1">Email address</label>
+                <input type="email" class="form-control" id="exampleInputEmail1" placeholder="Email">
+              </div>
+              <div class="form-group">
+                <label for="exampleInputPassword1">Password</label>
+                <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password">
+              </div>
+              <button type="submit" class="btn btn-default pull-right">Login</button>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-xs-12 col-sm-6 col-sm-offset-3 text-center">
+            Don't have an account? <router-link v-bind:to="{ name: 'register' }">Register Here.</router-link>
+          </div>
+        </div>
+      <div>
+    </script>
+    <!-- /Login -->
+
+    <!-- Register -->
+    <script type="text/x-template" id="template-register">
+      <p>Register</p>
+    </script>
+    <!-- /Register -->
 
     <script src="./js/vue.js"></script>
     <script src="./js/vue-router.js"></script>
