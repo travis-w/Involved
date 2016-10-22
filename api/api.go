@@ -17,7 +17,7 @@ func RegisterRoute(route string, handler func(http.ResponseWriter,*http.Request)
 }
 
 func Init() {
-	tempDB, err := sql.Open("mysql", "root@tcp(127.0.0.1:3306)/involved")
+	tempDB, err := sql.Open("mysql", "root@tcp(127.0.0.1:3306)/involved?parseTime=true")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -32,7 +32,9 @@ func Init() {
 	}
 
 	RegisterRoute("login", loginRoute)
+	RegisterRoute("logout", logoutRoute)
 	RegisterRoute("user", userRoute)
+	RegisterRoute("event", requireAuth(eventRoute))
 }
 
 func Shutdown() {

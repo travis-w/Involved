@@ -34,7 +34,7 @@ create table token (
 	primary key (user_id, value)
 );
 
-create table location (
+create table user_location (
 	user_id int not null,
 	latitude double precision,
 	longitude double precision,
@@ -42,27 +42,71 @@ create table location (
 	primary key (user_id)
 );
 
-create table room (
-	post_id int not null AUTO_INCREMENT,
-	owner int not null,
-	numBeds int default 1,
-	numDays int default 1,
-	offersDinner int default 0,
-	offersBreakfast int default 0,
-	offersLunch int default 0,
-	alcoholPresent int default 0,
-	created timestamp default current_timestamp,
-	foreign key (owner) references user(id) on delete cascade,
-	primary key (post_id)
+create table seeker_dependent (
+	user_id int not null,
+	sub_id int default 1,
+	name varchar(128) not null,
+	foreign key (user_id) references user(id),
+	primary key (user_id, sub_id)
 );
 
-create table request (
-	requester int not null,
-	room int not null,
-	accepted int default 0,
-	foreign key (requester) references user(id) on delete cascade,
-	foreign key (room) references room(post_id) on delete cascade,
-	primary key (requester, room)
+create table user_meta (
+	user_id int not null,
+	sub_id int default 0,
+	meta_key varchar(32) not null,
+	value varchar(256) default '',
+	foreign key (user_id) references user(id) on delete cascade,
+	primary key (user_id, meta_key)
+);
+
+create table event (
+	event_id int not null AUTO_INCREMENT,
+	user_id int not null,
+	availableSlots int default 1,
+	maximumDivisions int default 1,
+	description varchar(2048) default '',
+	created timestamp default current_timestamp,
+	type varchar(20) default '',
+	foreign key (user_id) references user(id) on delete cascade,
+	primary key (event_id)
+);
+
+create table event_location (
+	event_id int not null,
+	latitude double precision,
+	longitude double precision,
+	foreign key (event_id) references event(event_id) on delete cascade,
+	primary key (event_id)
+);
+
+create table event_meta (
+	event_id int not null,
+	meta_key varchar(32) not null,
+	value varchar(256) default '',
+	isNeed tinyint(1) default 0,
+	foreign key (event_id) references event(event_id) on delete cascade,
+	primary key (event_id, meta_key)
+);
+
+create table seeker_event_response (
+	event_id int not null,
+	user_id int not null,
+	accepted tinyint(1) default 0,
+	count int default -1,
+	foreign key (event_id) references event(event_id),
+	foreign key (user_id) references user(id),
+	primary key (event_id, user_id)
+);
+
+create table host_event_response (
+	event_id int not null,
+	user_id int not null,
+	accepted tinyint(1) default 0,
+	meta_key varchar(32) not null,
+	value varchar(256) default '',
+	foreign key (event_id, meta_key) references event_meta(event_id, meta_key),
+	foreign key (user_id) references user(id),
+	primary key (event_id, user_id, meta_key)
 );
 
 create event KILL_TOKENS
