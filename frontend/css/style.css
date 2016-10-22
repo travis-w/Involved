@@ -46,3 +46,11 @@ body {
 .location-data {
   padding-left: 110px;
 }
+
+a.glyphicon:hover {
+  text-decoration: none;
+}
+
+.need-link {
+  margin-right: 5px;
+}

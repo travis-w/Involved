@@ -30,7 +30,7 @@ func (e *Event) MarshalJSON() ([]byte, error) {
 	}
 	needs += "]"
 
-	meta := "{"
+	meta := "{ "
 	for key, value := range e.MetaData {
 		meta += `"` + key + `":"` + value + `",`;
 	}
@@ -69,11 +69,13 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 	switch r.Method {
 	case "POST":
 		if user.Type == "seeker" {
+			w.WriteHeader(http.StatusForbidden)
 			fmt.Fprintf(w, "{error: \"You do not have permission to create events\"}")
 		}
 		event, err := validateEvent(r.URL.Query());
 
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{error: \"%v\"}", err)
 			return
 		}
@@ -81,25 +83,29 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 		id, err := createEvent(user, event)
 
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{error: \"%v\"}", err)
 		}
 
-		fmt.Fprintf(w, "{id: %d}", id)
+		fmt.Fprintf(w, "{\"id\": %d}", id)
 	case "GET":
 		strId, ok := r.URL.Query()["id"]
 		if !ok {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{error: \"no event id provided\"}")
 			return
 		}
 
 		id, err := strconv.ParseInt(strId[0], 10, 0)
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{error: \"event id must be an integer\"}")
 			return
 		}
 
 		event, err := getEvent(int(id))
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Println(err)
 			fmt.Fprintf(w, "{error: \"no such event found\"}")
 			return
@@ -107,6 +113,7 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 
 		jsonEvent, err := json.Marshal(event)
 		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Println(err)
 			fmt.Fprintf(w, "{error: \"error parsing event found\"}")
 			return
@@ -137,6 +144,7 @@ func validateEvent(params map[string][]string) (*Event, error) {
 		}
 	}
 
+	fmt.Println(needs)
 	meta, ok := params["meta"]
 	metaData := make(map[string]string)
 
