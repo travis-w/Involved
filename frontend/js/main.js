@@ -49,8 +49,11 @@ var Login = {
     login: function() {
       // Example user request
       app.$http.post('login', {}, { params: this.formData }).then(function(data) {
-        console.log(data);
-        app.user = {};
+        app.user = data;
+        app.addMessage("success", "Success", "User successfully logged in.");
+        router.push({ name: "home" })
+      }).catch(function(fail) {
+        app.addMessage("danger", "Error", "Invalid email or password.")
       });
     }
   }
@@ -95,6 +98,8 @@ var Register = {
         app.$http.post('user', {}, { params: this.formData }).then(function(data) {
           app.addMessage("success", "Success", "Successfully registered user!");
           router.push({ "name": "login" })
+        }).catch(function(data) {
+          app.addMessage("danger", "Error", "User with email already exists.");
         });
       }
     }
@@ -139,14 +144,31 @@ var requireLogin = function(to, from, next) {
   }
 }
 
+var requireGuest = function(to, from, next) {
+  if (typeof app === "undefined") {
+    next();
+    return;
+  }
+
+  // Allow user to go to destination if logged in
+  if (app.user) {
+    next({ name: "home" });
+  }
+
+  // Redirect to login
+  else {
+    next();
+  }
+
+}
 /* ------------------- ROUTES ------------------- */
 var routes = [
   { path: "/", redirect: "/home" },
   { name: "home", path: "/home", component: Home },
   { name: "locationList", path: "/locations", component: LocationList },
   { name: "locationProfile", path: "/locations/:id", component: LocationProfile },
-  { name: "login", path: "/login", component: Login },
-  { name: "register", path: "/register", component: Register },
+  { name: "login", path: "/login", component: Login, beforeEnter: requireGuest },
+  { name: "register", path: "/register", component: Register, beforeEnter: requireGuest },
   {
     name: "settings",
     path: "/settings",
@@ -174,13 +196,19 @@ var router = new VueRouter({
 
 // Mount to app
 var app = new Vue({
+  router,
+  http: {
+    root: '/api'
+  },
   data: {
     messages: [],
     user: null
   },
-  router,
-  http: {
-    root: '/api'
+  created: function() {
+    var self = this;
+    this.$http.get("login").then(function(data) {
+      self.user = data;
+    });
   },
   methods: {
     addMessage: function(type, title, message) {

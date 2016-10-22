@@ -57,6 +57,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		fmt.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "{error: \"could not read from Database\"}")
 		return
 	}
@@ -64,6 +65,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	res, err := json.Marshal(parsedUser)
 
 	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "{error: \"could not parse user\"}")
 		return
 	}
@@ -128,6 +130,7 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			fmt.Println(err)
+			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, "{error: \"failed to create user: %v\"}", err)
 			return
 		}
