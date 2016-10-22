@@ -30,7 +30,7 @@ func Init() {
 		db.Close()
 		return
 	}
-	
+
 	RegisterRoute("login", loginRoute)
 	RegisterRoute("user", userRoute)
 }
@@ -43,6 +43,7 @@ func Request(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path[len("/api/"):]
 	fn,ok := routes[path]
 	if !ok {
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprintf(w, "{error: \"%s is not a registered API route.\"}", path)
 		return
 	}

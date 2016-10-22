@@ -17,6 +17,7 @@
             <router-link tag="li" v-bind:to="{ name: 'locationList' }" active-class="active"><a>Locations</a></router-link>
             <router-link tag="li" v-bind:to="{ name: 'login' }" active-class="active" v-if="!user"><a>Login</a></router-link>
             <router-link tag="li" v-bind:to="{ name: 'settings' }" active-class="active" v-if="user"><a>Settings</a></router-link>
+            <router-link tag="li" v-bind:to="{ name: 'logout' }" active-class="active" v-if="user"><a>Logout</a></router-link>
           </ul>
         </nav>
         <h3 class="text-muted">Involved</h3>

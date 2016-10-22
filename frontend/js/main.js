@@ -159,7 +159,15 @@ var requireGuest = function(to, from, next) {
   else {
     next();
   }
+}
 
+var logout = function(to, from, next) {
+  app.$http.get('logout').then(function() {
+    app.user = null;
+    app.addMessage("success", "Success", "Successfully logged out");
+  }).catch(function() {
+    app.addMessage("danger", "Error", "Error trying to log user out");
+  });
 }
 /* ------------------- ROUTES ------------------- */
 var routes = [
@@ -169,6 +177,7 @@ var routes = [
   { name: "locationProfile", path: "/locations/:id", component: LocationProfile },
   { name: "login", path: "/login", component: Login, beforeEnter: requireGuest },
   { name: "register", path: "/register", component: Register, beforeEnter: requireGuest },
+  { name: "logout", path: "/logout", beforeEnter: logout },
   {
     name: "settings",
     path: "/settings",
