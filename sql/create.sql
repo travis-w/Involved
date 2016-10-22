@@ -27,23 +27,23 @@ create table user (
 );
 
 create table token (
-	id int not null,
+	user_id int not null,
 	value varchar(128) not null unique,
 	created timestamp default current_timestamp,
-	foreign key (id) references user(id) on delete cascade,
-	primary key (id, value)
+	foreign key (user_id) references user(id) on delete cascade,
+	primary key (user_id, value)
 );
 
 create table location (
-	id int not null,
+	user_id int not null,
 	latitude double precision,
 	longitude double precision,
-	foreign key (id) references user(id) on delete cascade,
-	primary key (id)
+	foreign key (user_id) references user(id) on delete cascade,
+	primary key (user_id)
 );
 
 create table room (
-	id int not null AUTO_INCREMENT,
+	post_id int not null AUTO_INCREMENT,
 	owner int not null,
 	numBeds int default 1,
 	numDays int default 1,
@@ -53,7 +53,7 @@ create table room (
 	alcoholPresent int default 0,
 	created timestamp default current_timestamp,
 	foreign key (owner) references user(id) on delete cascade,
-	primary key (id)
+	primary key (post_id)
 );
 
 create table request (
@@ -61,7 +61,7 @@ create table request (
 	room int not null,
 	accepted int default 0,
 	foreign key (requester) references user(id) on delete cascade,
-	foreign key (room) references room(id) on delete cascade,
+	foreign key (room) references room(post_id) on delete cascade,
 	primary key (requester, room)
 );
 

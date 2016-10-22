@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"errors"
+	"encoding/hex"
 	"golang.org/x/crypto/scrypt"
 )
 
@@ -94,7 +95,7 @@ func createUser(params map[string][]string) (int, error) {
 		"INSERT INTO user (name, email, password, type) VALUES (?,?,?,?)",
 		name[0],
 		email[0],
-		hash,
+		hex.EncodeToString(hash),
 		userType[0])
 
 	if err != nil {
@@ -107,21 +108,46 @@ func createUser(params map[string][]string) (int, error) {
 }
 
 func userRoute(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+
+	if err == nil {
+		_, err = userFromToken(cookie.Value)
+	}
+
 	switch r.Method {
 	case "GET":
-		//userFromToken(r.Cookies)
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			return
+		}
+
 		getUser(w, r)
 	case "POST":
 		id, err := createUser(r.URL.Query())
+
 		if err != nil {
 			fmt.Println(err)
 			fmt.Fprintf(w, "{error: \"failed to create user: %v\"}", err)
 			return
 		}
+
 		fmt.Fprintf(w, "{id: %d}", id)
 	case "PUT":
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			return
+		}
+
 		fmt.Fprintf(w, "{error: \"Updates not supported yet\"}")
 	case "DELETE":
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			return
+		}
+
 		fmt.Fprintf(w, "{error: \"Updates not supported yet\"}")
 	}
 }

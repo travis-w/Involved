@@ -2,11 +2,12 @@ package api
 
 import (
 	"fmt"
-	//"io/ioutil"
 	"net/http"
 	"errors"
 	"golang.org/x/crypto/scrypt"
 	"time"
+	"encoding/hex"
+	"encoding/json"
 )
 
 func login(params map[string][]string) (string, error) {
@@ -31,7 +32,7 @@ func login(params map[string][]string) (string, error) {
 		return "", err
 	}
 
-	if string(hash)[:len(storedHash)] != storedHash {
+	if hex.EncodeToString(hash) != storedHash {
 		return "", nil
 	}
 
@@ -45,6 +46,24 @@ func login(params map[string][]string) (string, error) {
 }
 
 func loginRoute(w http.ResponseWriter, r *http.Request) {
+	cookie, err := r.Cookie("token")
+
+	if err == nil {
+		user, err := userFromToken(cookie.Value)
+
+		if err == nil {
+			res, err := json.Marshal(user)
+
+			if err != nil {
+				fmt.Fprintf(w, "{error: \"could not parse user\"}")
+				return
+			}
+
+			fmt.Fprintf(w, string(res))
+			return
+		}
+	}
+
 	switch r.Method {
 	case "POST":
 		token, err := login(r.URL.Query())
@@ -68,6 +87,24 @@ func loginRoute(w http.ResponseWriter, r *http.Request) {
 			HttpOnly: true,
 		})
 
-		fmt.Fprintf(w, "{msg: \"success\"}")
+		user, err := userFromToken(token)
+
+		if err != nil {
+			fmt.Println(err)
+			fmt.Fprintf(w, "{error: \"could not read user\"}")
+			return
+		}
+
+		res, err := json.Marshal(user)
+
+		if err != nil {
+			fmt.Fprintf(w, "{error: \"could not parse user\"}")
+			return
+		}
+
+		fmt.Fprintf(w, string(res))
+	case "GET":
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, "{error: \"not logged in\"}")
 	}
 }

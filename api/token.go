@@ -22,12 +22,25 @@ func generateToken() string {
 }
 
 func storeToken(token string, user int) error {
-	_, err := db.Exec("INSERT INTO token (id, value) VALUES (?,?)", user, token)
+	_, err := db.Exec("INSERT INTO token (user_id, value) VALUES (?,?)", user, token)
 	return err
 }
 
-func userFromToken(token string) (int, error) {
-	var id int = -1
-	err := db.QueryRow("select id from token where value = ?", token).Scan(&id)
-	return id, err
+func userFromToken(token string) (*User, error) {
+	var parsedUser User
+	var passHash string
+
+	err := db.QueryRow("select user.* from user, token where value=? and user.id=user_id", token).Scan(
+		&parsedUser.Id,
+		&parsedUser.Name,
+		&passHash,
+		&parsedUser.Email,
+		&parsedUser.Pic,
+		&parsedUser.EmailVerified,
+		&parsedUser.CheckedInWith,
+		&parsedUser.BelongsTo,
+		&parsedUser.Desc,
+		&parsedUser.Type)
+
+	return &parsedUser, err
 }
