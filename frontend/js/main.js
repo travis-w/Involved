@@ -40,19 +40,17 @@ var Login = {
     return {
       formData: {
         email: "",
-        password: ""
+        pass: ""
       }
     }
   },
 
   methods: {
     login: function() {
-      // Login Logic
-      console.log(JSON.stringify(this.formData));
-
       // Example user request
-      app.$http.get('user').then(function(data) {
-        console.log(data.data);
+      app.$http.post('login', {}, { params: this.formData }).then(function(data) {
+        console.log(data);
+        app.user = {};
       });
     }
   }
@@ -111,7 +109,15 @@ var Register = {
 };
 
 var Settings = {
-  template: "#template-settings"
+  parent: {
+    template: "#template-settings"
+  },
+  general: {
+    template: "<div>General Settings</div>"
+  },
+  security: {
+    template: "<div>Security Settings</div>"
+  }
 }
 
 /* ----------------- AUTH GUARD ----------------- */
@@ -141,7 +147,25 @@ var routes = [
   { name: "locationProfile", path: "/locations/:id", component: LocationProfile },
   { name: "login", path: "/login", component: Login },
   { name: "register", path: "/register", component: Register },
-  { name: "settings", path: "/settings", component: Settings, beforeEnter: requireLogin }
+  {
+    name: "settings",
+    path: "/settings",
+    component: Settings.parent,
+    beforeEnter: requireLogin,
+    redirect: "/settings/general",
+    children: [
+      {
+        name: "general",
+        path: "general",
+        component: Settings.general
+      },
+      {
+        name: "security",
+        path: "security",
+        component: Settings.security
+      }
+    ]
+  }
 ];
 
 var router = new VueRouter({
