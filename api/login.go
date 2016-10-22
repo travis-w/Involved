@@ -55,7 +55,7 @@ func loginRoute(w http.ResponseWriter, r *http.Request) {
 			res, err := json.Marshal(user)
 
 			if err != nil {
-				fmt.Fprintf(w, "{error: \"could not parse user\"}")
+				fmt.Fprintf(w, `{"error": "could not parse user"}`)
 				return
 			}
 
@@ -70,13 +70,13 @@ func loginRoute(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "{error: \"login failed: %v\"}", err)
+			fmt.Fprintf(w, `{"error": "login failed: %v"}`, err)
 			return
 		}
 
 		if token == "" {
 			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "{error: \"login failed: wrong email or password\"}")
+			fmt.Fprintf(w, `{"error": "login failed: wrong email or password"}`)
 			return
 		}
 
@@ -91,20 +91,20 @@ func loginRoute(w http.ResponseWriter, r *http.Request) {
 
 		if err != nil {
 			fmt.Println(err)
-			fmt.Fprintf(w, "{error: \"could not read user\"}")
+			fmt.Fprintf(w, `{"error": "could not read user"}`)
 			return
 		}
 
 		res, err := json.Marshal(user)
 
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"could not parse user\"}")
+			fmt.Fprintf(w, `{"error": "could not parse user"}`)
 			return
 		}
 
 		fmt.Fprintf(w, string(res))
 	case "GET":
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, "{error: \"not logged in\"}")
+		fmt.Fprintf(w, `{"error": "not logged in"}`)
 	}
 }

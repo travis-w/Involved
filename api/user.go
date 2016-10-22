@@ -29,14 +29,14 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	strId, ok := r.URL.Query()["id"]
 
 	if !ok {
-		fmt.Fprintf(w, "{error: \"no user id provided\"}")
+		fmt.Fprintf(w, `{"error": "no user id provided"}`)
 		return
 	}
 
 	id, err := strconv.ParseInt(strId[0], 10, 0)
 
 	if err != nil {
-		fmt.Fprintf(w, "{error: \"user id must be integer\"}")
+		fmt.Fprintf(w, `{"error": "user id must be integer"}`)
 		return
 	}
 
@@ -58,7 +58,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "{error: \"could not read from Database\"}")
+		fmt.Fprintf(w, `{"error": "could not read from Database"}`)
 		return
 	}
 
@@ -66,7 +66,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		fmt.Fprintf(w, "{error: \"could not parse user\"}")
+		fmt.Fprintf(w, `{"error": "could not parse user"}`)
 		return
 	}
 
@@ -120,7 +120,7 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 	case "GET":
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			fmt.Fprintf(w, `{"error": "must be logged in to view other users"}`)
 			return
 		}
 
@@ -131,7 +131,7 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, "{error: \"failed to create user: %v\"}", err)
+			fmt.Fprintf(w, `{"error": "failed to create user: %v"}`, err)
 			return
 		}
 
@@ -139,18 +139,18 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 	case "PUT":
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			fmt.Fprintf(w, `{"error": "must be logged in to view other users"}`)
 			return
 		}
 
-		fmt.Fprintf(w, "{error: \"Updates not supported yet\"}")
+		fmt.Fprintf(w, `{"error": "Updates not supported yet"}`)
 	case "DELETE":
 		if err != nil {
 			w.WriteHeader(http.StatusUnauthorized)
-			fmt.Fprintf(w, "{error: \"must be logged in to view other users\"}")
+			fmt.Fprintf(w, `{"error": "must be logged in to view other users"}`)
 			return
 		}
 
-		fmt.Fprintf(w, "{error: \"Updates not supported yet\"}")
+		fmt.Fprintf(w, `{"error": "Updates not supported yet"}`)
 	}
 }

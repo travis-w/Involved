@@ -52,14 +52,14 @@ func requireAuth(route func(http.ResponseWriter, *http.Request, *User) ) func (h
 		cookie, err := r.Cookie("token")
 
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"you must log in to use this feature\"}")
+			fmt.Fprintf(w, `{"error": "you must log in to use this feature"}`)
 			return
 		}
 
 		user, err := userFromToken(cookie.Value)
 
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"you must log in to use this feature\"}")
+			fmt.Fprintf(w, `{"error": "you must log in to use this feature"}`)
 			return
 		}
 

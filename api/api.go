@@ -35,6 +35,7 @@ func Init() {
 	RegisterRoute("logout", logoutRoute)
 	RegisterRoute("user", userRoute)
 	RegisterRoute("event", requireAuth(eventRoute))
+	RegisterRoute("events", requireAuth(queryEventsRoute))
 }
 
 func Shutdown() {
@@ -46,7 +47,7 @@ func Request(w http.ResponseWriter, r *http.Request) {
 	fn,ok := routes[path]
 	if !ok {
 		w.WriteHeader(http.StatusNotFound)
-		fmt.Fprintf(w, "{error: \"%s is not a registered API route.\"}", path)
+		fmt.Fprintf(w, `{"error": "%s is not a registered API route."}`, path)
 		return
 	}
 

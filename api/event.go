@@ -24,13 +24,13 @@ type Event struct {
 
 func (e *Event) MarshalJSON() ([]byte, error) {
 	event := `{"id":%d,"creator":%d,"slots":%d,"divisions":%d,"type":"%s","description":"%s","start":"%s","needs":%s,"meta":%s}`
-	needs := "["
+	needs := "[ "
 	for key, _ := range e.Needs {
-		needs += `"` + key + `"`
+		needs += `"` + key + `",`
 	}
-	needs += "]"
+	needs = needs[:len(needs)-1] + "]"
 
-	meta := "{"
+	meta := "{ "
 	for key, value := range e.MetaData {
 		meta += `"` + key + `":"` + value + `",`;
 	}
@@ -69,46 +69,46 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 	switch r.Method {
 	case "POST":
 		if user.Type == "seeker" {
-			fmt.Fprintf(w, "{error: \"You do not have permission to create events\"}")
+			fmt.Fprintf(w, `{"error": "You do not have permission to create events"}`)
 		}
 		event, err := validateEvent(r.URL.Query());
 
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"%v\"}", err)
+			fmt.Fprintf(w, `{"error": "%v"}`, err)
 			return
 		}
 
 		id, err := createEvent(user, event)
 
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"%v\"}", err)
+			fmt.Fprintf(w, `{"error": "%v"}`, err)
 		}
 
 		fmt.Fprintf(w, "{id: %d}", id)
 	case "GET":
 		strId, ok := r.URL.Query()["id"]
 		if !ok {
-			fmt.Fprintf(w, "{error: \"no event id provided\"}")
+			fmt.Fprintf(w, `{"error": "no event id provided"}`)
 			return
 		}
 
 		id, err := strconv.ParseInt(strId[0], 10, 0)
 		if err != nil {
-			fmt.Fprintf(w, "{error: \"event id must be an integer\"}")
+			fmt.Fprintf(w, `{"error": "event id must be an integer"}`)
 			return
 		}
 
 		event, err := getEvent(int(id))
 		if err != nil {
 			fmt.Println(err)
-			fmt.Fprintf(w, "{error: \"no such event found\"}")
+			fmt.Fprintf(w, `{"error": "no such event found"}`)
 			return
 		}
 
 		jsonEvent, err := json.Marshal(event)
 		if err != nil {
 			fmt.Println(err)
-			fmt.Fprintf(w, "{error: \"error parsing event found\"}")
+			fmt.Fprintf(w, `{"error": "error parsing event found"}`)
 			return
 		}
 
