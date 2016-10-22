@@ -1,5 +1,7 @@
 create database involved;
 
+alter database involved character set utf8 collate utf8_unicode_ci;
+
 use involved;
 
 create table types (
@@ -12,6 +14,7 @@ insert into types VALUES ("host"), ("seeker"), ("center"), ("organization");
 create table user (
 	id int not null AUTO_INCREMENT,
 	name varchar(128) not null,
+	password varchar(128) not null,
 	email varchar(128) not null unique,
 	pic_url varchar(256) default '',
 	emailVerified int default 0,

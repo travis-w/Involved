@@ -31,6 +31,7 @@ func Init() {
 		return
 	}
 	
+	RegisterRoute("login", loginRoute)
 	RegisterRoute("user", userRoute)
 }
 
