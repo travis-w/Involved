@@ -21,7 +21,9 @@
           </ul>
         </nav>
         <!-- <h3 class="text-muted">Involved</h3> -->
-        <h3><img src="./img/involved.png" height="50"/></h3>
+        <router-link tag="h3" v-bind:to="{ name: 'home' }" active-class="active">
+          <img src="./img/involved.png" height="50" id="logo"/>
+        </router-link>
       </div>
 
       <!-- Alerts -->
@@ -269,6 +271,7 @@
     <script src="./js/vue-resource.js"></script>
     <script src="./js/jquery.js"></script>
     <script src="./js/bootstrap.js"></script>
+    <script src="./js/templates/landing.js"></script>
     <script src="./js/main.js"></script>
   </body>
 </html>

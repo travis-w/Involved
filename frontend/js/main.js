@@ -8,7 +8,7 @@ var fakeData = {
 /* ----------------- COMPONENTS ----------------- */
 var HomeSubComps = {
   welcome: {
-    template: "<div>Landing page</div>"
+    template: landing
   },
   host: {
     template: "#template-home-host"
