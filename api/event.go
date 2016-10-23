@@ -75,7 +75,7 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 		}
 
 		if user.Type == "host" || user.Type == "organization" {
-			if user.checkedInWith == 0 {
+			if user.CheckedInWith == 0 {
 				w.WriteHeader(http.StatusForbidden)
 				fmt.Fprintf(w, `{"error": "You must be verified by a center to create events"}`)
 				return

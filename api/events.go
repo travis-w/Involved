@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/json"
-	//"errors"
+	"errors"
+	"strconv"
 )
 
 func queryEventsRoute(w http.ResponseWriter, r *http.Request, user *User) {
@@ -38,7 +39,6 @@ func queryEventsRoute(w http.ResponseWriter, r *http.Request, user *User) {
 func getEvents(params map[string][]string) ([]*Event, error) {
 	queryStr := "SELECT e.* FROM event e "
 
-	var lng []string
 	lat, doLocation := params["latitude"]
 	if doLocation {
 		lng, ok := params["longitude"]
@@ -53,9 +53,9 @@ func getEvents(params map[string][]string) ([]*Event, error) {
 			rad = []string{"10"}
 		}
 
-		realLat, _ := strconv.ParseFloat(lat[0], 10, 0)
-		realLng, _ := strconv.ParseFloat(lng[0], 10, 0)
-		realRad, _ := strconv.ParseFloat(rad[0], 10, 0)
+		realLat, _ := strconv.ParseFloat(lat[0], 64)
+		realLng, _ := strconv.ParseFloat(lng[0], 64)
+		realRad, _ := strconv.ParseFloat(rad[0], 64)
 
 		realRad /= 50
 
