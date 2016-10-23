@@ -62,8 +62,8 @@ func getEvents(params map[string][]string) ([]*Event, error) {
 	}
 
 	//alcohol present
-	_, noAlcohol := params["noAlcohol"]
-	if noAlcohol {
+	alc, noAlcohol := params["noAlcohol"]
+	if noAlcohol && alc[0] != "0" {
 		tables += ", event_meta m "
 		if conditions != "" {
 			conditions += "and "
