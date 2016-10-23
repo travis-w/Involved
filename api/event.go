@@ -80,6 +80,7 @@ func eventRoute(w http.ResponseWriter, r *http.Request, user *User) {
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			fmt.Fprintf(w, `{"error": "%v"}`, err)
+			return
 		}
 
 		fmt.Fprintf(w, "{\"id\": %d}", id)

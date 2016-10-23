@@ -109,6 +109,25 @@ create table host_event_response (
 	primary key (event_id, user_id, meta_key)
 );
 
+create table item (
+	item_id int not null AUTO_INCREMENT,
+	cost int default 100,
+	seller int not null,
+	description varchar(512) default '',
+	foreign key (seller) references user(id),
+	primary key (item_id)
+);
+
+create table purchase (
+	user_id int not null,
+	item_id int not null,
+	requested timestamp default current_timestamp,
+	fulfilled tinyint(1) default 0,
+	foreign key (user_id) references user(id),
+	foreign key (item_id) references item(item_id),
+	primary key (user_id, item_id, requested)
+);
+
 create event KILL_TOKENS
 	on schedule every 1 hour
     comment 'removes old login tokens'

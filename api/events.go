@@ -29,7 +29,7 @@ func queryEventsRoute(w http.ResponseWriter, r *http.Request, user *User) {
 			asJSON = []byte("[]")
 		}
 
-		fmt.Fprintf(w, string(asJSON))
+		fmt.Fprint(w, string(asJSON))
 	default:
 		fmt.Fprintf(w, `{"error": "cannot access this route with that method"}`)
 	}
