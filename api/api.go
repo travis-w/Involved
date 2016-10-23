@@ -36,6 +36,7 @@ func Init() {
 	RegisterRoute("user", userRoute)
 	RegisterRoute("event", requireAuth(eventRoute))
 	RegisterRoute("event/apply", requireAuth(applyToEventRoute))
+	RegisterRoute("event/accept", requireAuth(acceptToEventRoute))
 	RegisterRoute("events", requireAuth(queryEventsRoute))
 	RegisterRoute("user/verify", requireAuth(verifyUserRoute))
 	RegisterRoute("user/purchases", requireAuth(purchaseRoute))
