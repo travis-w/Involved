@@ -79,3 +79,15 @@ a.glyphicon:hover {
   width: 100%;
   text-shadow: 0 0 15px rgba(0,0,0,.25);
 }
+
+/* overrides */
+.alert {
+  padding: 5px;
+  padding-right: 25px;
+}
+
+.alert-success {
+  color: #3c6a76;
+  background-color: #d8ecf0;
+  border-color: #c6e5e9;
+}
