@@ -154,3 +154,38 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, `{"error": "Updates not supported yet"}`)
 	}
 }
+
+func verifyUserRoute(w http.ResponseWriter, r *http.Request, user *User) {
+	if user.Type != "center" {
+		w.WriteHeader(http.StatusUnauthorized)
+		fmt.Fprintf(w, `{"error": "only centers can verify users"}`)
+		return
+	}
+
+	account, ok := r.URL.Query()["account"]
+	if !ok {
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, `{"error": "must submit an account to verify"}`)
+		return
+	}
+
+	res, err := db.Exec("UPDATE user SET checkedInWith=? WHERE id=?", user.Id, account[0])
+
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"error": "account could not be verified"}`)
+		return
+	}
+
+	rows, err := res.RowsAffected()
+
+	if err != nil || rows == 0 {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, `{"error": "account could not be verified"}`)
+		return
+	}
+
+	w.WriteHeader(http.StatusBadRequest)
+	fmt.Fprintf(w, `{"msg":"success"}`)
+	return
+}

@@ -36,6 +36,7 @@ func Init() {
 	RegisterRoute("user", userRoute)
 	RegisterRoute("event", requireAuth(eventRoute))
 	RegisterRoute("events", requireAuth(queryEventsRoute))
+	RegisterRoute("user/verify", requireAuth(verifyUserRoute))
 }
 
 func Shutdown() {
