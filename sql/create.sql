@@ -92,7 +92,7 @@ create table seeker_event_response (
 	event_id int not null,
 	user_id int not null,
 	accepted tinyint(1) default 0,
-	count int default -1,
+	count int default 1,
 	foreign key (event_id) references event(event_id),
 	foreign key (user_id) references user(id),
 	primary key (event_id, user_id)
