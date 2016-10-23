@@ -36,19 +36,6 @@ func (e *Event) MarshalJSON() ([]byte, error) {
 	}
 	meta = meta[:len(meta)-1] + "}"
 
-	fmt.Println(fmt.Sprintf(
-			event,
-			e.Id,
-			e.Creator,
-			e.Slots,
-			e.Divisions,
-			e.EventType,
-			e.Description,
-			e.Start.String(),
-			needs,
-			meta,
-		))
-
 	return []byte(
 		fmt.Sprintf(
 			event,

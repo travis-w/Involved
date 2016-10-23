@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"encoding/json"
-	"errors"
 	"strconv"
 )
 
@@ -37,16 +36,14 @@ func queryEventsRoute(w http.ResponseWriter, r *http.Request, user *User) {
 }
 
 func getEvents(params map[string][]string) ([]*Event, error) {
-	queryStr := "SELECT e.* FROM event e "
+	tables := "event e "
+	conditions := ""
+	order := "order by e.created"
 
-	lat, doLocation := params["latitude"]
-	if doLocation {
-		lng, ok := params["longitude"]
-
-		if !ok {
-			return nil, errors.New("need both latitude and longitude to search by location")
-		}
-
+	//location
+	lat, hasLat := params["latitude"]
+	lng, hasLng := params["longitude"]
+	if hasLat && hasLng {
 		rad, ok := params["radius"]
 
 		if !ok {
@@ -58,27 +55,38 @@ func getEvents(params map[string][]string) ([]*Event, error) {
 		realRad, _ := strconv.ParseFloat(rad[0], 64)
 
 		realRad /= 50
-
-		queryStr += ", event_location l WHERE e.event_id=l.event_id and "
+		tables += ", event_location l "
+		conditions += "e.event_id=l.event_id and "
 		formula := "(l.latitude-%f)*(l.latitude-%f)+(l.longitude-%f)*(l.longitude-%f)<%f "
-		queryStr += fmt.Sprintf(formula, realLat, realLat, realLng, realLng, realRad*realRad)
-
-	} else {
-		queryStr += "WHERE "
+		conditions += fmt.Sprintf(formula, realLat, realLat, realLng, realLng, realRad*realRad)
 	}
 
-	subQry_1 := "SELECT COALESCE(SUM(s.accepted),0) FROM seeker_event_response s, event e WHERE s.event_id=e.event_id"
-	subQry_2 := "SELECT COALESCE(COUNT(*),0) FROM seeker_dependent d, event e, seeker_event_response s " +
+	//alcohol present
+	_, noAlcohol := params["noAlcohol"]
+	if noAlcohol {
+		tables += ", event_meta m "
+		if conditions != "" {
+			conditions += "and "
+		}
+		conditions += "e.event_id=m.event_id and m.meta_key='alcohol' and m.value='no' "
+	}
+
+	//still open and has slots
+	subQry_1 := "SELECT COALESCE(SUM(s.accepted),0) FROM seeker_event_response s WHERE s.event_id=e.event_id"
+	subQry_2 := "SELECT COALESCE(COUNT(*),0) FROM seeker_dependent d, seeker_event_response s " +
 				"WHERE d.user_id=s.user_id and e.event_id=s.event_id and s.accepted=1 "
 
-	queryStr += "e.created > date_sub(current_timestamp, interval 1 day) "
-	queryStr += "and e.maximumDivisions > (" + subQry_1 + ") or e.maximumDivisions=-1 "
-	queryStr += "and e.availableSlots > (" + subQry_2 + ") or e.availableSlots=-1 "
+	if conditions != "" {
+		conditions += "and "
+	}
+
+	conditions += "e.created > date_sub(current_timestamp, interval 1 day) "
+	conditions += "and e.maximumDivisions > (" + subQry_1 + ") or e.maximumDivisions=-1 "
+	conditions += "and e.availableSlots > (" + subQry_2 + ") or e.availableSlots=-1 "
 
 
-	queryStr += "order by e.created"
 
-	rows, err := db.Query(queryStr)
+	rows, err := db.Query("SELECT e.* FROM " + tables + "WHERE " + conditions + order)
 
 	if err != nil {
 		return nil, err
