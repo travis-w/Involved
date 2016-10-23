@@ -156,9 +156,9 @@ func userRoute(w http.ResponseWriter, r *http.Request) {
 }
 
 func verifyUserRoute(w http.ResponseWriter, r *http.Request, user *User) {
-	if user.Type != "center" {
+	if user.Type != "center" || user.CheckedInWith == 0 {
 		w.WriteHeader(http.StatusUnauthorized)
-		fmt.Fprintf(w, `{"error": "only centers can verify users"}`)
+		fmt.Fprintf(w, `{"error": "only verified centers can verify users"}`)
 		return
 	}
 
